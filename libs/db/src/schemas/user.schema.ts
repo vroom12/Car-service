@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class User {
   // 姓名
-  @Prop({})
+  @Prop()
   @ApiProperty({ description: '姓名' })
   name: string;
   // 邮箱
@@ -14,16 +14,12 @@ export class User {
   @ApiProperty({ description: '邮箱' })
   email: string;
   // 密码
-  @Prop({
-    required: true,
-  })
-  @ApiProperty({ description: '密码', required: true })
+  @Prop()
+  @ApiProperty({ description: '密码' })
   password: string;
   // 用户名
-  @Prop({
-    required: true,
-  })
-  @ApiProperty({ description: '用户名', required: true })
+  @Prop()
+  @ApiProperty({ description: '用户名' })
   username: string;
   // 手机号
   @Prop()

@@ -1,29 +1,31 @@
 import { Prop } from '@typegoose/typegoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { AVAILABLE_STATUS_TYPE } from '../types/car.type';
 
 export class Car {
-  @Prop()
-  @ApiProperty({ description: '车名' })
-  name: string;
-  @Prop()
   @ApiProperty({ description: '品牌' })
+  @Prop()
   brand: string;
-  @Prop()
   @ApiProperty({ description: '价格' })
+  @Prop()
   price: number;
-  @Prop()
-  @ApiProperty({ description: '优惠价格' })
-  discountPrice: number;
-  @Prop()
   @ApiProperty({ description: '车型' })
-  carType: string;
   @Prop()
+  car_type: string;
   @ApiProperty({ description: '车牌号' })
-  carNumber: string;
   @Prop()
+  number_plate: string;
   @ApiProperty({ description: '车颜色' })
-  carColor: string;
   @Prop()
-  @ApiProperty({ description: '车辆图片' })
-  carImg: string;
+  color: string;
+  @ApiProperty({ description: '押金' })
+  @Prop()
+  deposit: number;
+  @ApiProperty({
+    description: '可用状态',
+    type: () => Number,
+    enum: AVAILABLE_STATUS_TYPE,
+  })
+  @Prop({ type: () => Number, enum: AVAILABLE_STATUS_TYPE })
+  available_status: AVAILABLE_STATUS_TYPE;
 }

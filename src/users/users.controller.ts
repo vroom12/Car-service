@@ -16,7 +16,6 @@ import { UserService } from './user.service';
 import { LocalAuthGuard } from 'src/auth/auth.local.guard';
 import { AuthService } from '../auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/auth.jwt.guard';
-// const token = 'token';
 
 @Controller('users')
 export class UsersController {
@@ -27,34 +26,43 @@ export class UsersController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req: any) {
-    return req.user;
+  @Get('curUser')
+  async curUser(@Request() req: any) {
+    return {
+      code: 0,
+      data: await this.userService.findOneById(req.user.userId),
+      msg: 'success',
+    };
   }
 
   @Get(':id')
   async findOneById(@Param('id') id: string) {
     const user = await this.userService.findOneById(id);
     return {
-      code: 200,
+      code: 0,
       data: user,
-      message: 'success',
+      msg: 'success',
     };
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req: any) {
-    return this.authService.login(req.user._doc);
+    return {
+      code: 0,
+      data: await this.authService.login(req.user._doc),
+      msg: 'success',
+    };
   }
 
   @Post('register')
   async register(@Body() body: User) {
+    // console.log(body);
     const user = await this.userService.register(body);
     return {
-      code: 200,
+      code: 0,
       data: user,
-      message: 'success',
+      msg: 'success',
     };
   }
 
@@ -62,9 +70,9 @@ export class UsersController {
   async update(@Param('id') id: string, @Body() body: User) {
     const user = await this.userService.update(id, body);
     return {
-      code: 200,
+      code: 0,
       data: user,
-      message: 'success',
+      msg: 'success',
     };
   }
 
@@ -72,9 +80,9 @@ export class UsersController {
   async delete(@Param('id') id: string) {
     const user = await this.userService.delete(id);
     return {
-      code: 200,
+      code: 0,
       data: user,
-      message: 'success',
+      msg: 'success',
     };
   }
 }

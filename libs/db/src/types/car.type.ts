@@ -1,0 +1,4 @@
+export enum AVAILABLE_STATUS_TYPE {
+  AVAILABLE = 0,
+  UNAVAILABLE = 1,
+}

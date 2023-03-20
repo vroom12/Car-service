@@ -1,4 +1,5 @@
 import { Car } from '@lib/db/schemas/cars.schema';
+import { PaginateDto } from '@lib/db/types/common';
 import {
   Body,
   Controller,
@@ -10,72 +11,66 @@ import {
   Put,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { CarsService } from './cars.service';
 
 @Controller('cars')
 export class CarsController {
   constructor(
     @Inject(Car.name) private readonly carModel: ReturnModelType<typeof Car>,
+    private readonly carService: CarsService,
   ) {}
 
   @Get()
   async findAll() {
-    const cars = await this.carModel.find();
     return {
-      code: 200,
-      data: cars,
-      message: 'success',
+      code: 0,
+      data: await this.carService.findAll(),
+      msg: 'success',
     };
   }
 
   @Get(':id')
-  async findOneById(@Param('id') id: string) {
-    const car = await this.carModel.findById(id);
+  async findById(@Param('id') id: string) {
     return {
       code: 200,
-      data: car,
-      message: 'success',
-    };
-  }
-
-  @Get('brand/:brand')
-  async findOneByBrand(@Param('brand') brand: string) {
-    const car = await this.carModel.find({ brand: brand });
-    return {
-      code: 200,
-      data: car,
-      message: 'success',
+      data: await this.carService.findById(id),
+      msg: 'success',
     };
   }
 
   @Post('insert')
-  async create(@Body() body: Car) {
-    const createdCar = await this.carModel.create({ ...body });
+  async insert(@Body() insertDto: Car) {
     return {
-      code: 200,
-      data: createdCar,
-      message: 'success',
+      code: 0,
+      data: await this.carService.insert(insertDto),
+      msg: 'success',
+    };
+  }
+
+  @Post('findAllByPaginate')
+  async findAllByPaginate(@Body() paginateDto: PaginateDto) {
+    return {
+      code: 0,
+      data: await this.carService.find(paginateDto),
+      msg: 'success',
     };
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() body: Car) {
-    const updatedCar = await this.carModel.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+  async update(@Param('id') id: string, @Body() updateDto: Car) {
     return {
-      code: 200,
-      data: updatedCar,
-      message: 'success',
+      code: 0,
+      data: await this.carService.update(id, updateDto),
+      msg: 'success',
     };
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string) {
-    const deletedCar = await this.carModel.findByIdAndDelete(id);
+  async remove(@Param('id') id: string) {
     return {
       code: 200,
-      data: deletedCar,
-      message: 'success',
+      data: await this.carService.remove(id),
+      msg: 'success',
     };
   }
 }

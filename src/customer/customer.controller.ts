@@ -1,4 +1,5 @@
 import { Customer } from '@lib/db/schemas/customer.schema';
+import { PaginateDto } from '@lib/db/types/common';
 import {
   Body,
   Controller,
@@ -10,6 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { CustomerService } from './customer.service';
 
 type pageType = {
   page: number;
@@ -21,83 +23,80 @@ export class CustomerController {
   constructor(
     @Inject(Customer.name)
     private readonly customerModel: ReturnModelType<typeof Customer>,
+    private readonly customerService: CustomerService,
   ) {}
 
   @Get()
   async findAll() {
-    const customers = await this.customerModel.find();
     return {
-      code: 200,
-      data: customers,
-      message: 'success',
-    };
-  }
-
-  @Get('page')
-  async findPage2(@Body() body: pageType) {
-    const { page, pageSize } = body;
-    const customers = await this.customerModel
-      .find()
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    const total = await this.customerModel.countDocuments();
-    const totalPage = Math.ceil(total / pageSize);
-    return {
-      code: 200,
-      data: {
-        total, // 总数
-        totalPage, // 总页数
-        page, // 当前页
-        pageSize, // 每页条数
-        customers, // 当前页数据
-      },
-      message: 'success',
+      code: 0,
+      data: await this.customerService.findAll(),
+      msg: 'success',
     };
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const customer = await this.customerModel.findById(id);
+  async findById(@Param('id') id: string) {
     return {
-      code: 200,
-      data: customer,
-      message: 'success',
+      code: 0,
+      data: await this.customerService.findById(id),
+      msg: 'success',
+    };
+  }
+
+  @Post('findAllByPaginate')
+  async findAllByPaginate(@Body() paginateDto: PaginateDto) {
+    return {
+      code: 0,
+      data: await this.customerService.findAllByPaginate(paginateDto),
+      msg: 'success',
     };
   }
 
   @Post('insert')
-  async create(@Body() body: Customer) {
-    const createdCustomer = await this.customerModel.create({ ...body });
+  async insert(@Body() insertDto: Customer) {
     return {
-      code: 200,
-      data: createdCustomer,
-      message: 'success',
+      code: 0,
+      data: await this.customerService.insert(insertDto),
+      msg: 'success',
     };
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: Customer) {
-    const updatedCustomer = await this.customerModel.findByIdAndUpdate(
-      id,
-      body,
-      {
-        new: true,
-      },
-    );
+  @Patch('updateCustomer/:id')
+  async update(@Param('id') id: string, @Body() updateDto: Customer) {
     return {
-      code: 200,
-      data: updatedCustomer,
-      message: 'success',
+      code: 0,
+      data: await this.customerService.update(id, updateDto),
+      msg: 'success',
+    };
+  }
+
+  @Patch('updateCustomerByField/:id')
+  async updateByField(
+    @Param('id') id: string,
+    @Body()
+    fieldDto: {
+      fieldToUpdate: string;
+      value: any;
+    },
+  ) {
+    return {
+      code: 0,
+      data: await this.customerService.updateByField(
+        id,
+        fieldDto.fieldToUpdate,
+        fieldDto.value,
+      ),
+      msg: 'success',
     };
   }
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
-    const deletedCustomer = await this.customerModel.findByIdAndDelete(id);
     return {
-      code: 200,
-      data: deletedCustomer,
-      message: 'success',
+      code: 0,
+      data: await this.customerService.delete(id),
+      msg: 'success',
     };
   }
 }
